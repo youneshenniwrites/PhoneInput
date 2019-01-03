@@ -1,6 +1,7 @@
 import React from 'react'
 import { 
   View,
+  Text,
   StyleSheet, 
   SafeAreaView,
   Keyboard,
@@ -15,7 +16,17 @@ import {
   Icon
 } from 'native-base'
 
+import data from './Countries'
+
+// Default render of country flag
+const defaultFlag = data.filter(
+  obj => obj.name === 'United Kingdom'
+  )[0].flag
+
 export default class App extends React.Component {
+  state = {
+    flag: defaultFlag
+  }
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -30,6 +41,8 @@ export default class App extends React.Component {
                     name='call'
                     style={styles.iconStyle}
                   />
+                  {/* country flag */}
+                  <View><Text>{this.state.flag}</Text></View>
                   <Icon
                     active
                     name='md-arrow-dropdown'
