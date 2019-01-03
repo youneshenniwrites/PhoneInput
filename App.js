@@ -1,5 +1,12 @@
 import React from 'react'
-import { StyleSheet, SafeAreaView } from 'react-native'
+import { 
+  View,
+  StyleSheet, 
+  SafeAreaView,
+  Keyboard,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback
+} from 'react-native'
 // native base imports
 import {
   Container,
@@ -12,17 +19,37 @@ export default class App extends React.Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Container style={styles.infoContainer}>
-          {/* Phone input with native-base */}
-          <Item rounded style={styles.itemStyle}>
-            <Icon
-              active
-              name='call'
-              style={styles.iconStyle}
-            />
-            <Input style={styles.input} />
-          </Item>
-        </Container>
+        <KeyboardAvoidingView style={styles.container} behavior='padding' enabled>
+          <TouchableWithoutFeedback style={styles.container} onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+              <Container style={styles.infoContainer}>
+                {/* Phone input with native-base */}
+                <Item rounded style={styles.itemStyle}>
+                  <Icon
+                    active
+                    name='call'
+                    style={styles.iconStyle}
+                  />
+                  <Icon
+                    active
+                    name='md-arrow-dropdown'
+                    style={[styles.iconStyle, { marginLeft: 0 }]}
+                  />
+                  <Input 
+                    placeholder='+44766554433'
+                    placeholderTextColor='#adb4bc'
+                    keyboardType={'phone-pad'}
+                    returnKeyType='done'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    secureTextEntry={false}
+                    style={styles.input}                   
+                  />
+                </Item>
+              </Container>
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     )
   }
