@@ -25,7 +25,7 @@
 3. Install client dependencies
 
 ```
-yarn add
+yarn
 
 # or
 
