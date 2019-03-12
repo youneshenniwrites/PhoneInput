@@ -1,5 +1,7 @@
 # React Native International Mobile Phone Input
 
+![app layout](https://user-images.githubusercontent.com/26605247/54213787-e8c18000-44dc-11e9-9161-caf7058a0bfd.png)
+
 ## Overview
 
 * This app allows users to include international phone input for sign up pages in mobile applications.
