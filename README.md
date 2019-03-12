@@ -35,3 +35,7 @@ npm install
 4. Launch the simulator
 
 ```expo start --ios```
+
+## Step by step tutorial
+
+Read the article of how I made this component on [Medium](https://bit.ly/2sbdNIE).
