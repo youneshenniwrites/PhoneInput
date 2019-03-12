@@ -45,18 +45,17 @@ export default class App extends React.Component {
     // Refocus on the Input field after selecting the country code
     this.refs.PhoneInput._root.focus()
   }
-  async selectCountry(country) {
+
+  async getCountry(country) {
     const countryData = await data
     try {
-      // Get a country code
       const countryCode = await countryData.filter(
         obj => obj.name === country
       )[0].dial_code
-      // Get a country flag
       const countryFlag = await countryData.filter(
         obj => obj.name === country
       )[0].flag
-      // Update the state
+      // Set data from user choice of country
       this.setState({ phoneNumber: countryCode, flag: countryFlag })
       await this.hideModal()
     }
@@ -64,7 +63,9 @@ export default class App extends React.Component {
       console.log(err)
     }
   }
+
   render() {
+    let { flag } = this.state
     const countryData = data
     return (
       <SafeAreaView style={styles.container}>
@@ -73,65 +74,89 @@ export default class App extends React.Component {
             <View style={styles.container}>
               <Container style={styles.infoContainer}>
                 {/* Phone input with native-base */}
-                <Item rounded style={styles.itemStyle}>
-                  <Icon
-                    active
-                    name='call'
-                    style={styles.iconStyle}
-                  />
-                  {/* country flag */}
-                  <View><Text>{this.state.flag}</Text></View>
-                  <Icon
-                    active
-                    name='md-arrow-dropdown'
-                    style={[styles.iconStyle, { marginLeft: 0 }]}
-                    onPress={() => this.showModal()}
-                  />
-                  <Input 
-                    placeholder='+44766554433'
-                    placeholderTextColor='#adb4bc'
-                    keyboardType={'phone-pad'}
-                    returnKeyType='done'
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    secureTextEntry={false}
-                    style={styles.inputStyle}    
-                    value={this.state.phoneNumber}
-                    ref='PhoneInput'
-                    onChangeText={(val) => this.onChangeText('phoneNumber', val)}               
-                  />
-                  {/* Modal for country code and flag */}
-                  <Modal
-                    animationType="slide" // fade
-                    transparent={false}
-                    visible={this.state.modalVisible}>
-                    <View style={{ flex: 1 }}>
-                      <View style={{ flex: 7, marginTop: 80 }}>
-                        <FlatList
-                          data={countryData}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={
-                            ({ item }) =>
-                              <TouchableWithoutFeedback onPress={() => this.selectCountry(item.name)}>
-                                <View style={styles.countryStyle}>
-                                  <Text style={styles.textStyle}>
-                                    {item.flag} {item.name} ({item.dial_code})
-                                  </Text>
-                                </View>
-                              </TouchableWithoutFeedback>
-                          }
-                        />
+                  {/* phone section  */}
+                  <Item rounded style={styles.itemStyle}>
+                    <Icon
+                      active
+                      name='call'
+                      style={styles.iconStyle}
+                    />
+                    {/* country flag */}
+                    <View><Text style={{fontSize: 40}}>{flag}</Text></View>
+                    {/* open modal */}
+                    <Icon
+                      active
+                      name='md-arrow-dropdown'
+                      style={[styles.iconStyle, { marginLeft: 5 }]}
+                      onPress={() => this.showModal()}
+                    />
+                    <Input
+                      style={styles.input}
+                      placeholder='+44766554433'
+                      placeholderTextColor='#adb4bc'
+                      keyboardType={'phone-pad'}
+                      returnKeyType='done'
+                      autoCapitalize='none'
+                      autoCorrect={false}
+                      secureTextEntry={false}
+                      ref='PhoneInput'
+                      value={this.state.phoneNumber}
+                      onChangeText={(val) => {
+                        if (this.state.phoneNumber===''){
+                          // render UK phone code by default when Modal is not open
+                          this.onChangeText('phoneNumber', defaultCode + val)
+                        } else {
+                          // render country code based on users choice with Modal
+                          this.onChangeText('phoneNumber', val)
+                        }}
+                      }
+                    />
+                    {/* Modal for country code and flag */}
+                    <Modal
+                      animationType="slide" // fade
+                      transparent={false}
+                      visible={this.state.modalVisible}>
+                      <View style={{ flex: 1 }}>
+                        <View style={{ flex: 10, paddingTop: 80, backgroundColor: '#5059ae' }}>
+                          <FlatList
+                            data={countryData}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={
+                              ({ item }) =>
+                                <TouchableWithoutFeedback 
+                                  onPress={() => this.getCountry(item.name)}>
+                                  <View 
+                                    style={
+                                      [
+                                        styles.countryStyle, 
+                                        {
+                                          flexDirection: 'row', 
+                                          alignItems: 'center',
+                                          justifyContent: 'space-between'
+                                        }
+                                      ]
+                                    }>
+                                    <Text style={{fontSize: 45}}>
+                                      {item.flag}
+                                    </Text>
+                                    <Text style={{fontSize: 20, color: '#fff'}}>
+                                      {item.name} ({item.dial_code})
+                                    </Text>
+                                  </View>
+                                </TouchableWithoutFeedback>
+                            }
+                          />
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => this.hideModal()} 
+                          style={styles.closeButtonStyle}>
+                          <Text style={styles.textStyle}>
+                            Close
+                          </Text>
+                        </TouchableOpacity>
                       </View>
-                      <TouchableOpacity
-                        onPress={() => this.hideModal()} 
-                        style={styles.closeButtonStyle}>
-                        <Text style={styles.textStyle}>
-                          Cancel
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </Modal>
-                </Item>
+                    </Modal>
+                  </Item>
               </Container>
             </View>
           </TouchableWithoutFeedback>
@@ -144,43 +169,52 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#aa73b7',
+    backgroundColor: '#5059ae',
     justifyContent: 'center',
     flexDirection: 'column'
   },
+  input: {
+    flex: 1,
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
   infoContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 200,
-    bottom: 250,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 30,
-    backgroundColor: '#aa73b7',
-  },
-  iconStyle: {
-    color: '#5a52a5',
-    fontSize: 28,
-    marginLeft: 15
+    backgroundColor: '#5059ae',
   },
   itemStyle: {
     marginBottom: 10,
   },
-  inputStyle: {
-    flex: 1,
-    fontSize: 17,
+  iconStyle: {
+    color: '#fff',
+    fontSize: 28,
+    marginLeft: 15
+  },
+  buttonStyle: {
+    alignItems: 'center',
+    backgroundColor: '#b44666',
+    padding: 14,
+    marginBottom: 10,
+    borderRadius: 3,
+  },
+  buttonText: {
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#5a52a5',
+    color: "#fff",
   },
   textStyle: {
     padding: 5,
-    fontSize: 18
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold'
   },
   countryStyle: {
     flex: 1,
-    backgroundColor: '#99ff',
+    backgroundColor: '#5059ae',
     borderTopColor: '#211f',
     borderTopWidth: 1,
     padding: 12,
@@ -189,8 +223,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
     alignItems: 'center', 
-    borderTopWidth: 1,
-    borderTopColor: '#211f',
-    backgroundColor: '#fff3',
+    backgroundColor: '#b44666',
   }
 })
