@@ -16,7 +16,7 @@
 
 1. Clone the repo in your local machine.
 
-```git clone https://github.com/jtaylor1989/PhoneInput.git```
+```git clone https://github.com/yhenni1989/PhoneInput.git```
 
 2. Go inside the project directory.
 
